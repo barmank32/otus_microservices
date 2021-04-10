@@ -1,0 +1,14 @@
+spec:
+  containers:
+    - name: mongo_db
+      image: mongo:3.2
+      volumeMounts:
+        - mountPath: /data/db
+          name: mongo_db
+      tty: false
+      stdin: false
+  restartPolicy: Always
+  volumes:
+    - name: mongo_db
+      hostPath:
+        path: /data-db

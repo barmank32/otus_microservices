@@ -1,0 +1,19 @@
+spec:
+  containers:
+    - name: rabbitmq
+      image: rabbitmq:3-management-alpine
+      volumeMounts:
+        - mountPath: /var/lib/rabbitmq
+          name: rabbitmq_data
+      tty: false
+      stdin: false
+      env:
+        - name: RABBITMQ_DEFAULT_USER
+          value: rabbitmq_user
+        - name: RABBITMQ_DEFAULT_PASS
+          value: rabbitmq_pass
+  restartPolicy: Always
+  volumes:
+    - name: rabbitmq_data
+      hostPath:
+        path: /data-db
