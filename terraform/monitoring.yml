@@ -1,0 +1,16 @@
+version: "3.7"
+services:
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:7.4.3
+    ports:
+      - 3000:3000
+    user: "472:1"
+    volumes:
+      - /mnt/grafana:/var/lib/grafana
+    restart: always
+
+x-yc-disks:
+  - device_name: monitoring-data
+    fs_type: ext4
+    host_path: /mnt/
