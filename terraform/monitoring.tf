@@ -17,11 +17,11 @@ resource "yandex_compute_instance" "monitoring" {
     }
   }
 
-  secondary_disk {
-    disk_id = yandex_compute_disk.monitoring-data.id
-    device_name = "monitoring-data"
-    mode = "READ_WRITE"
-  }
+  # secondary_disk {
+  #   disk_id = yandex_compute_disk.monitoring-data.id
+  #   device_name = "monitoring-data"
+  #   mode = "READ_WRITE"
+  # }
 
   network_interface {
     subnet_id = var.subnet_id
@@ -53,14 +53,14 @@ resource "yandex_compute_instance" "monitoring" {
     script = "files/deploy.sh"
   }
 
-  depends_on = [
-    yandex_compute_disk.monitoring-data
-  ]
+  # depends_on = [
+  #   yandex_compute_disk.monitoring-data
+  # ]
 }
 
-resource "yandex_compute_disk" "monitoring-data" {
-  name     = "monitoring-data"
-  type     = "network-ssd"
-  zone     = var.zone
-  size = 10
-}
+# resource "yandex_compute_disk" "monitoring-data" {
+#   name     = "monitoring-data"
+#   type     = "network-ssd"
+#   zone     = var.zone
+#   size = 10
+# }

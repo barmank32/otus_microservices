@@ -1,16 +1,58 @@
 version: "3.7"
 services:
+  prometheus:
+    image: prom/prometheus:v2.25.0
+    ports:
+      - "9090:9090"
+    volumes:
+      - type: bind
+        source: /volume/prometheus/prometheus.yml
+        target: /etc/prometheus/prometheus.yml
+      - type: bind
+        source: /volume/prometheus/alerts.yml
+        target: /etc/prometheus/alerts.yml
+      - /volume/prometheus/data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention=7d"
+      - "--web.enable-lifecycle"
+    restart: always
+  blackbox-exporter:
+    image: prom/blackbox-exporter
+    volumes:
+      - type: bind
+        source: /volume/blackbox-exporter/config.yml
+        target: /etc/blackboxexporter/config.yml
+    command:
+      - "--config.file=/etc/blackboxexporter/config.yml"
+    restart: always
+  alertmanager:
+    image: prom/alertmanager:v0.21.0
+    ports:
+      - 9093:9093
+    volumes:
+      - type: bind
+        source: /volume/alertmanager/config.yml
+        target: /etc/alertmanager/alertmanager.yml
+    restart: always
   grafana:
     container_name: grafana
     image: grafana/grafana:7.4.3
     ports:
       - 3000:3000
     user: "472:1"
+    # environment:
+    #   - GF_SERVER_DOMAIN: 'example.com'
+    #   - GF_SERVER_ROOT_URL: '%(protocol)s://%(domain)s:%(http_port)s/grafana/'
+    #   - GF_SERVER_SERVE_FROM_SUB_PATH: 'true'
+    #   # - GF_PATHS_CONFIG: /var/lib/grafana/grafana.ini
     volumes:
-      - /mnt/grafana:/var/lib/grafana
+      - /volume/grafana:/var/lib/grafana
+      - /volume/grafana/provisioning:/etc/grafana/provisioning
     restart: always
 
-x-yc-disks:
-  - device_name: monitoring-data
-    fs_type: ext4
-    host_path: /mnt/
+# x-yc-disks:
+#   - device_name: monitoring-data
+#     fs_type: ext4
+#     host_path: /mnt/
