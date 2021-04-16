@@ -42,12 +42,12 @@ resource "yandex_compute_instance" "monitoring" {
   }
 
   provisioner "file" {
-    source      = "files/configs"
+    source      = "files/monitoring"
     destination = "/tmp"
   }
 
   provisioner "remote-exec" {
-    script = "files/deploy.sh"
+    script = "files/monitoring.sh"
   }
 
 }
