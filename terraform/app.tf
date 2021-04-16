@@ -18,12 +18,12 @@ resource "yandex_compute_instance" "mongo-db" {
   }
 
   network_interface {
-    subnet_id = var.subnet_id
-    nat       = true
+    subnet_id = yandex_vpc_subnet.app-subnet.id
+    nat       = false
   }
 
   metadata = {
-    docker-container-declaration = file("mongo.yml")
+    docker-container-declaration = file("spec/mongo.yml")
     ssh-keys = "ubuntu:${file(var.public_key_path)}"
   }
 }
@@ -48,12 +48,12 @@ resource "yandex_compute_instance" "rabbitmq" {
   }
 
   network_interface {
-    subnet_id = var.subnet_id
-    nat       = true
+    subnet_id = yandex_vpc_subnet.app-subnet.id
+    nat       = false
   }
 
   metadata = {
-    docker-container-declaration = file("rabbitmq.yml")
+    docker-container-declaration = file("spec/rabbitmq.yml")
     ssh-keys = "ubuntu:${file(var.public_key_path)}"
   }
 }
@@ -78,12 +78,12 @@ resource "yandex_compute_instance" "crawler" {
   }
 
   network_interface {
-    subnet_id = var.subnet_id
-    nat       = true
+    subnet_id = yandex_vpc_subnet.app-subnet.id
+    nat       = false
   }
 
   metadata = {
-    docker-container-declaration = file("crawler.yml")
+    docker-container-declaration = file("spec/crawler.yml")
     ssh-keys = "ubuntu:${file(var.public_key_path)}"
   }
   depends_on = [
@@ -112,12 +112,12 @@ resource "yandex_compute_instance" "crawler-ui" {
   }
 
   network_interface {
-    subnet_id = var.subnet_id
-    nat       = true
+    subnet_id = yandex_vpc_subnet.app-subnet.id
+    nat       = false
   }
 
   metadata = {
-    docker-container-declaration = file("crawler-ui.yml")
+    docker-container-declaration = file("spec/crawler-ui.yml")
     ssh-keys = "ubuntu:${file(var.public_key_path)}"
   }
   depends_on = [
