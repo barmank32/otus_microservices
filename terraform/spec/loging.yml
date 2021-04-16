@@ -1,0 +1,11 @@
+version: "3.7"
+services:
+  blackbox-exporter:
+    image: prom/blackbox-exporter
+    # volumes:
+    #   - type: bind
+    #     source: /volume/blackbox-exporter/config.yml
+    #     target: /etc/blackboxexporter/config.yml
+    command:
+      - "--config.file=/etc/blackboxexporter/config.yml"
+    restart: always

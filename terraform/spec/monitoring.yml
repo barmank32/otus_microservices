@@ -36,23 +36,22 @@ services:
         source: /volume/alertmanager/config.yml
         target: /etc/alertmanager/alertmanager.yml
     restart: always
+  rabbitmq-exporter:
+    image: kbudde/rabbitmq-exporter
+    ports:
+      - 9419:9419
+    environment:
+      RABBIT_URL: 'http://rabbitmq:15672'
+      RABBIT_USER: 'rabbitmq_user'
+      RABBIT_PASSWORD: 'rabbitmq_pass'
+    restart: always 
   grafana:
     container_name: grafana
     image: grafana/grafana:7.4.3
     ports:
       - 3000:3000
     user: "472:1"
-    # environment:
-    #   - GF_SERVER_DOMAIN: 'example.com'
-    #   - GF_SERVER_ROOT_URL: '%(protocol)s://%(domain)s:%(http_port)s/grafana/'
-    #   - GF_SERVER_SERVE_FROM_SUB_PATH: 'true'
-    #   # - GF_PATHS_CONFIG: /var/lib/grafana/grafana.ini
     volumes:
       - /volume/grafana:/var/lib/grafana
       - /volume/grafana/provisioning:/etc/grafana/provisioning
     restart: always
-
-# x-yc-disks:
-#   - device_name: monitoring-data
-#     fs_type: ext4
-#     host_path: /mnt/
