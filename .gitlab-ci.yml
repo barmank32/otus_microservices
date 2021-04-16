@@ -1,7 +1,27 @@
-image: ruby:2.4.2
 stages:
   - build
-  - test
-  - review
-  - stage
-  - production
+
+.docker_login:
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - echo "$DOCKER_REGISTRY_PASS" | docker login --username $DOCKER_REGISTRY_USER --password-stdin
+
+build_crawler:
+  extends: .docker_login
+  stage: build
+  script:
+    - echo 'Building docker image crawler'
+    - docker info
+    - docker build -t $DOCKER_REGISTRY_USER/crawler docker/crawler
+    - docker push $DOCKER_REGISTRY_USER/crawler
+
+build_crawler-ui:
+  extends: .docker_login
+  stage: build
+  script:
+    - echo 'Building docker image crawler_ui'
+    - docker info
+    - docker build -t $DOCKER_REGISTRY_USER/crawler_ui docker/ui
+    - docker push $DOCKER_REGISTRY_USER/crawler_ui
