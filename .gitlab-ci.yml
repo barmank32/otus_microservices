@@ -5,31 +5,49 @@ stages:
 
 variables:
   DOCKER_REGISTRY: cr.yandex/crpjnlko70d33tt15jvt
-  
+
 .docker_login:
   image: docker:18.09
   services:
     - docker:18.09-dind
   before_script:
-    - docker login --username oauth --password $OAuth_yandex cr.yandex
+    - docker login --username oauth --password $YC_TOKEN cr.yandex
+
+.deploy: &deploy
+  script:
+    - echo 'deploy $INSTANCE'
+    - apt-get update && apt-get install -y curl
+    - curl -s -o /tmp/install.sh https://storage.yandexcloud.net/yandexcloud-yc/install.sh && bash /tmp/install.sh -i /usr -n
+    - source ~/.bashrc
+    - yc config set token $YC_TOKEN
+    - yc config set cloud-id $YC_CLOUD_ID
+    - yc config set folder-id $YC_FOLDER_ID
+    - yc config set compute-default-zone $YC_DEFAULT_ZONE
+    - yc compute instance get $INSTANCE --full --format yaml > spec.yml
+    - sed -i "s/image.*/image: $DOCKER_REGISTRY\/$IMAGE:$CI_COMMIT_SHORT_SHA/" spec.yml
+    - yc compute instance update --name $INSTANCE --profile spec.yml
 
 build_bot:
   extends: .docker_login
   stage: build
+  variables:
+    IMAGE: crawler
   script:
-    - echo 'Building docker image crawler'
+    - echo 'Building docker image $IMAGE'
     - docker info
-    - docker build -t $DOCKER_REGISTRY/crawler:$CI_COMMIT_SHORT_SHA docker/crawler
-    - docker push $DOCKER_REGISTRY/crawler:$CI_COMMIT_SHORT_SHA
+    - docker build -t $DOCKER_REGISTRY/$IMAGE:$CI_COMMIT_SHORT_SHA docker/crawler
+    - docker push $DOCKER_REGISTRY/$IMAGE:$CI_COMMIT_SHORT_SHA
 
 build_ui:
   extends: .docker_login
   stage: build
+  variables:
+    IMAGE: crawler_ui
   script:
-    - echo 'Building docker image crawler_ui'
+    - echo 'Building docker image $IMAGE'
     - docker info
-    - docker build -t $DOCKER_REGISTRY/crawler_ui:$CI_COMMIT_SHORT_SHA docker/ui
-    - docker push $DOCKER_REGISTRY/crawler_ui:$CI_COMMIT_SHORT_SHA
+    - docker build -t $DOCKER_REGISTRY/$IMAGE:$CI_COMMIT_SHORT_SHA docker/ui
+    - docker push $DOCKER_REGISTRY/$IMAGE:$CI_COMMIT_SHORT_SHA
 
 test_bot:
   stage: test
@@ -63,12 +81,17 @@ test_ui:
     - coverage report --include ui/ui.py
 
 deploy_bot:
+  <<: *deploy
   stage: deploy
-  script:
-    - echo 'deploy Crawler'
+  variables:
+    INSTANCE: crawler
+    IMAGE: crawler
+  script: echo "$INSTANCE ok"
 
 deploy_ui:
   stage: deploy
-  script:
-    - echo 'deploy UI'
-    
+  <<: *deploy
+  variables:
+    INSTANCE: crawler-ui
+    IMAGE: crawler_ui
+  script: echo "$INSTANCE ok"
