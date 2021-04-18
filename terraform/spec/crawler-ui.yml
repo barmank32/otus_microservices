@@ -1,13 +1,3 @@
-# spec:
-#   containers:
-#     - name: ui
-#       image: barmank32/crawler_ui:1.0
-#       tty: false
-#       stdin: false
-#       env:
-#         - name: MONGO
-#           value: mongo-db
-#   restartPolicy: Always
 ---
 version: "3.7"
 services:

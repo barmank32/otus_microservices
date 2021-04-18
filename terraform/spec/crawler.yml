@@ -1,24 +1,10 @@
-# spec:
-#   containers:
-#     - name: crawler
-#       image: barmank32/crawler:1.0
-#       tty: false
-#       stdin: false
-#       env:
-#         - name: MONGO
-#           value: mongo-db
-#         - name: RMQ_HOST
-#           value: rabbitmq
-#         - name: RMQ_USERNAME
-#           value: rabbitmq_user
-#         - name: RMQ_PASSWORD
-#           value: rabbitmq_pass
-#   restartPolicy: Always
 ---
 version: "3.7"
 services:
   crawler:
     image: barmank32/crawler:1.0
+    ports:
+      - "8000:8000"
     environment:
       - MONGO=mongo-db.ru-central1.internal
       - MONGO_PORT=27017
