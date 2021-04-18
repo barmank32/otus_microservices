@@ -1,11 +1,29 @@
 version: "3.7"
 services:
-  blackbox-exporter:
-    image: prom/blackbox-exporter
-    # volumes:
-    #   - type: bind
-    #     source: /volume/blackbox-exporter/config.yml
-    #     target: /etc/blackboxexporter/config.yml
-    command:
-      - "--config.file=/etc/blackboxexporter/config.yml"
+  fluentd:
+    image: barmank32/fluentd:logging
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+    volumes:
+      - type: bind
+        source: /volume/fluentd/fluent.conf
+        target: /fluentd/etc/fluent.conf
+    restart: always
+  elasticsearch:
+    image: elasticsearch:7.4.0
+    environment:
+      - ELASTIC_CLUSTER=false
+      - CLUSTER_NODE_MASTER=true
+      - CLUSTER_MASTER_NODE_NAME=es01
+      - discovery.type=single-node
+    expose:
+      - 9200
+    ports:
+      - "9200:9200"
+    restart: always
+  kibana:
+    image: kibana:7.4.0
+    ports:
+      - "5601:5601"
     restart: always
