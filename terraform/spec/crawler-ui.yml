@@ -1,10 +1,26 @@
-spec:
-  containers:
-    - name: ui
-      image: barmank32/crawler_ui:1.0
-      tty: false
-      stdin: false
-      env:
-        - name: MONGO
-          value: mongo-db
-  restartPolicy: Always
+# spec:
+#   containers:
+#     - name: ui
+#       image: barmank32/crawler_ui:1.0
+#       tty: false
+#       stdin: false
+#       env:
+#         - name: MONGO
+#           value: mongo-db
+#   restartPolicy: Always
+---
+version: "3.7"
+services:
+  prometheus:
+    image: barmank32/crawler_ui:1.0
+    ports:
+      - "8000:8000"
+    environment:
+      MONGO: mongo-db
+    logging:
+      driver: "fluentd"
+      options: 
+        fluentd-async-connect: "true"
+        fluentd-address: loging:24224
+        tag: "crawler"
+    restart: always
