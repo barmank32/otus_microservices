@@ -1,13 +1,17 @@
 stages:
   - test
   - build
+  - deploy
 
+variables:
+  DOCKER_REGISTRY: cr.yandex/crpjnlko70d33tt15jvt
+  
 .docker_login:
   image: docker:18.09
   services:
     - docker:18.09-dind
   before_script:
-    - echo "$DOCKER_REGISTRY_PASS" | docker login --username $DOCKER_REGISTRY_USER --password-stdin
+    - docker login --username oauth --password $OAuth_yandex cr.yandex
 
 build_bot:
   extends: .docker_login
@@ -15,8 +19,8 @@ build_bot:
   script:
     - echo 'Building docker image crawler'
     - docker info
-    - docker build -t $DOCKER_REGISTRY_USER/crawler docker/crawler
-    - docker push $DOCKER_REGISTRY_USER/crawler
+    - docker build -t $DOCKER_REGISTRY/crawler:$CI_COMMIT_SHORT_SHA docker/crawler
+    - docker push $DOCKER_REGISTRY/crawler:$CI_COMMIT_SHORT_SHA
 
 build_ui:
   extends: .docker_login
@@ -24,8 +28,8 @@ build_ui:
   script:
     - echo 'Building docker image crawler_ui'
     - docker info
-    - docker build -t $DOCKER_REGISTRY_USER/crawler_ui docker/ui
-    - docker push $DOCKER_REGISTRY_USER/crawler_ui
+    - docker build -t $DOCKER_REGISTRY/crawler_ui:$CI_COMMIT_SHORT_SHA docker/ui
+    - docker push $DOCKER_REGISTRY/crawler_ui:$CI_COMMIT_SHORT_SHA
 
 test_bot:
   stage: test
@@ -57,3 +61,14 @@ test_ui:
     - python -m unittest discover -s tests/
     - coverage run -m unittest discover -s tests/
     - coverage report --include ui/ui.py
+
+deploy_bot:
+  stage: deploy
+  script:
+    - echo 'deploy Crawler'
+
+deploy_ui:
+  stage: deploy
+  script:
+    - echo 'deploy UI'
+    
