@@ -13,8 +13,7 @@ variables:
   before_script:
     - docker login --username oauth --password $YC_TOKEN cr.yandex
 
-.deploy:
-  script:
+.deploy-script: &deploy-script
     - echo 'deploy $INSTANCE'
     - apt-get update && apt-get install -y curl
     - curl -s -o /tmp/install.sh https://storage.yandexcloud.net/yandexcloud-yc/install.sh && bash /tmp/install.sh -i /usr -n
@@ -81,17 +80,15 @@ test_ui:
     - coverage report --include ui/ui.py
 
 deploy_bot:
-  extends: .deploy
   stage: deploy
   variables:
     INSTANCE: crawler
     IMAGE: crawler
-  script: echo "$INSTANCE ok"
+  script: *deploy-script
 
 deploy_ui:
-  extends: .deploy
   stage: deploy
   variables:
     INSTANCE: crawler-ui
     IMAGE: crawler_ui
-  script: echo "$INSTANCE ok"
+  script: *deploy-script
