@@ -29,7 +29,7 @@ variables:
   after_script:
     - yc compute instance get $INSTANCE --full --format json > spec.json
     # - 'sed -i "s#image.*#image: $DOCKER_REGISTRY/$IMAGE:$CI_COMMIT_SHORT_SHA#" spec.yml'
-    - "sed -e 's/image:.[a-z0-9/]*:[.a-z0-9/]*/$DOCKER_REGISTRY/$IMAGE:$CI_COMMIT_SHORT_SHA/g' spec.json"
+    - "sed -e 's/image:.[a-z0-9/]*:[.a-z0-9/]*/$DOCKER_REGISTRY\/$IMAGE:$CI_COMMIT_SHORT_SHA/g' spec.json"
     - cat spec.json
     - yc compute instance update --name $INSTANCE --profile spec.json
 
