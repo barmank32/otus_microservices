@@ -1,5 +1,7 @@
 stages:
   - build
+  - test
+  - push
 
 .docker_login:
   image: docker:latest
@@ -8,20 +10,52 @@ stages:
   before_script:
     - echo "$DOCKER_REGISTRY_PASS" | docker login --username $DOCKER_REGISTRY_USER --password-stdin
 
-build_crawler:
+build_bot:
   extends: .docker_login
   stage: build
   script:
     - echo 'Building docker image crawler'
     - docker info
-    - docker build -t $DOCKER_REGISTRY_USER/crawler docker/crawler
-    - docker push $DOCKER_REGISTRY_USER/crawler
+    - docker build -t crawler docker/crawler
 
-build_crawler-ui:
+build_ui:
   extends: .docker_login
   stage: build
   script:
     - echo 'Building docker image crawler_ui'
     - docker info
-    - docker build -t $DOCKER_REGISTRY_USER/crawler_ui docker/ui
+    - docker build -t crawler_ui docker/ui
+
+test_bot:
+  stage: test
+  image: crawler:latest
+  services:
+    - rabbitmq:3-management-alpine
+  script:
+    - pip install -r /app/requirements-test.txt
+    - python -m unittest discover -s tests/
+    - coverage run -m unittest discover -s tests/
+    - coverage report --include crawler/crawler.py
+
+test_ui:
+  stage: test
+  image: crawler_ui:latest
+  script:
+    - pip install -r /app/requirements-test.txt
+    - python -m unittest discover -s tests/
+    - coverage run -m unittest discover -s tests/
+    - coverage report --include ui/ui.py
+
+push_bot:
+  extends: .docker_login
+  stage: push
+  script:
+    - docker image tag crawler $DOCKER_REGISTRY_USER/crawler
+    - docker push $DOCKER_REGISTRY_USER/crawler
+
+push_ui:
+  extends: .docker_login
+  stage: push
+  script:
+    - docker image tag crawler_ui $DOCKER_REGISTRY_USER/crawler_ui
     - docker push $DOCKER_REGISTRY_USER/crawler_ui

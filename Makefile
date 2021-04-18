@@ -1,6 +1,6 @@
 DB = docker build -t
 DP = docker push
-TAG = 1.0
+TAG = latest
 USER_NAME = barmank32
 
 ifeq ($(USER_NAME),)
@@ -15,13 +15,21 @@ all:
 build: ui crawler
 
 ui:
-	$(DB) $(USER_NAME)/crawler_ui:$(TAG) docker/ui
+	$(DB) crawler_ui docker/ui
+	docker image tag crawler_ui $(USER_NAME)/crawler_ui:$(TAG)
 
 crawler:
-	$(DB) $(USER_NAME)/crawler:$(TAG) docker/crawler
+	$(DB) crawler docker/crawler
+	docker image tag crawler $(USER_NAME)/crawler:$(TAG)
+
+test_ui:
+	$(DB) crawler_ui:test -f docker/ui/Dockerfile_test docker/ui
+
+test_crawler:
+	$(DB) crawler:test -f docker/crawler/Dockerfile_test docker/crawler
 
 push:
 	$(DP) $(USER_NAME)/crawler_ui:$(TAG)
 	$(DP) $(USER_NAME)/crawler:$(TAG)
 
-.PHONY: crawler ui
+.PHONY: crawler ui test_ui  test_crawler push
