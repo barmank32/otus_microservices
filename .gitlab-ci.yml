@@ -13,17 +13,21 @@ variables:
   before_script:
     - docker login --username oauth --password $YC_TOKEN cr.yandex
 
-.deploy-script: &deploy-script
+.deploy:
+  before_script:
     - echo 'deploy $INSTANCE'
     - apt-get update && apt-get install -y curl
-    - curl -s -o /tmp/install.sh https://storage.yandexcloud.net/yandexcloud-yc/install.sh && bash /tmp/install.sh -i /usr -n
+    - curl -s -o /tmp/install.sh https://storage.yandexcloud.net/yandexcloud-yc/install.sh 
+    - bash /tmp/install.sh -i /usr -n
+  script:
     - source ~/.bashrc
-    - yc config set token $YC_TOKEN
-    - yc config set cloud-id $YC_CLOUD_ID
-    - yc config set folder-id $YC_FOLDER_ID
+    - yc config set token $YC_TOKEN 
+    - yc config set cloud-id $YC_CLOUD_ID 
+    - yc config set folder-id $YC_FOLDER_ID 
     - yc config set compute-default-zone $YC_DEFAULT_ZONE
+  after_script:
     - yc compute instance get $INSTANCE --full --format yaml > spec.yml
-    - sed -i "s/image.*/image: $DOCKER_REGISTRY\/$IMAGE:$CI_COMMIT_SHORT_SHA/" spec.yml
+    - 'sed -i "s/image.*/image: $DOCKER_REGISTRY\/$IMAGE:$CI_COMMIT_SHORT_SHA/" spec.yml'
     - yc compute instance update --name $INSTANCE --profile spec.yml
 
 build_bot:
@@ -80,15 +84,16 @@ test_ui:
     - coverage report --include ui/ui.py
 
 deploy_bot:
+  extends: .deploy
   stage: deploy
   variables:
     INSTANCE: crawler
     IMAGE: crawler
-  script: *deploy-script
 
 deploy_ui:
+  extends: .deploy
   stage: deploy
   variables:
     INSTANCE: crawler-ui
     IMAGE: crawler_ui
-  script: *deploy-script
+
