@@ -83,7 +83,7 @@ resource "yandex_compute_instance" "crawler" {
   }
 
   metadata = {
-    docker-container-declaration = file("spec/crawler.yml")
+    docker-compose = file("spec/crawler.yml")
     ssh-keys = "ubuntu:${file(var.public_key_path)}"
   }
   depends_on = [
@@ -117,7 +117,7 @@ resource "yandex_compute_instance" "crawler-ui" {
   }
 
   metadata = {
-    docker-container-declaration = file("spec/crawler-ui.yml")
+    docker-compose = file("spec/crawler-ui.yml")
     ssh-keys = "ubuntu:${file(var.public_key_path)}"
   }
   depends_on = [
