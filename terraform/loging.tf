@@ -29,25 +29,25 @@ resource "yandex_compute_instance" "loging" {
     ssh-keys       = "ubuntu:${file(var.public_key_path)}"
   }
 
-  # connection {
-  #   type  = "ssh"
-  #   agent = true
+  connection {
+    type  = "ssh"
+    agent = true
 
-  #   bastion_host        = yandex_compute_instance.nginx.network_interface.0.nat_ip_address
-  #   bastion_user        = "ubuntu"
-  #   bastion_private_key = file(var.privat_key_path)
+    bastion_host        = yandex_compute_instance.nginx.network_interface.0.nat_ip_address
+    bastion_user        = "ubuntu"
+    bastion_private_key = file(var.privat_key_path)
 
-  #   host = self.network_interface.0.ip_address
-  #   user = "ubuntu"
-  # }
+    host = self.network_interface.0.ip_address
+    user = "ubuntu"
+  }
 
-  # provisioner "file" {
-  #   source      = "files/loging"
-  #   destination = "/tmp"
-  # }
+  provisioner "file" {
+    source      = "files/loging"
+    destination = "/tmp"
+  }
 
-  # provisioner "remote-exec" {
-  #   script = "files/loging.sh"
-  # }
+  provisioner "remote-exec" {
+    script = "files/loging.sh"
+  }
 
 }
