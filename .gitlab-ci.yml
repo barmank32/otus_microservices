@@ -4,9 +4,9 @@ stages:
   - push
 
 .docker_login:
-  image: docker:latest
+  image: docker:18.09
   services:
-    - docker:dind
+    - docker:18.09-dind
   before_script:
     - echo "$DOCKER_REGISTRY_PASS" | docker login --username $DOCKER_REGISTRY_USER --password-stdin
 
