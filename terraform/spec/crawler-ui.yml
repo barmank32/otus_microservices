@@ -11,12 +11,13 @@
 ---
 version: "3.7"
 services:
-  prometheus:
+  crawler_ui:
     image: barmank32/crawler_ui:1.0
     ports:
       - "8000:8000"
     environment:
-      MONGO: mongo-db
+      - MONGO=mongo-db.ru-central1.internal
+      - MONGO_PORT=27017
     logging:
       driver: "fluentd"
       options: 

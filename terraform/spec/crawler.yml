@@ -20,10 +20,12 @@ services:
   crawler:
     image: barmank32/crawler:1.0
     environment:
-      MONGO: mongo-db
-      RMQ_HOST:  rabbitmq
-      RMQ_USERNAME: rabbitmq_user
-      RMQ_PASSWORD: rabbitmq_pass
+      - MONGO=mongo-db.ru-central1.internal
+      - MONGO_PORT=27017
+      - RMQ_HOST=rabbitmq.ru-central1.internal
+      - RMQ_QUEUE=5672
+      - RMQ_USERNAME=rabbitmq_user
+      - RMQ_PASSWORD=rabbitmq_pass
     logging:
       driver: "fluentd"
       options: 
