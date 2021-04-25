@@ -47,13 +47,3 @@ Gitlab-ci проведет необходимые тесты приложени�
 
 ## Локальная работа с приложением
 Для теста приложения на локальном компьютере используйте docker/docker-compose.yml.
-# Мои заметки
-
-https://github.com/express42/search_engine_ui
-
-https://github.com/express42/search_engine_crawler
-
-
-https://cloud.yandex.ru/docs/cos/concepts/
-
-`sudo journalctl -u yc-container-daemon`
