@@ -66,8 +66,10 @@ test_bot:
     RMQ_PASSWORD: guest
   script:
     - apk --no-cache --update add git
+    - echo $CI_REPOSITORY_URL
     - git clone $CI_REPOSITORY_URL /app
     - cd /app/docker/search_engine_crawler/   
+    - ls -l
     - pip install -r requirements.txt -r requirements-test.txt
     - python -m unittest discover -s tests/
     - coverage run -m unittest discover -s tests/
