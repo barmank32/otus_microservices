@@ -15,21 +15,15 @@ all:
 build: ui crawler
 
 ui:
-	$(DB) crawler_ui docker/ui
+	$(DB) crawler_ui docker/search_engine_ui
 	docker image tag crawler_ui $(USER_NAME)/crawler_ui:$(TAG)
 
 crawler:
-	$(DB) crawler docker/crawler
+	$(DB) crawler docker/search_engine_crawler
 	docker image tag crawler $(USER_NAME)/crawler:$(TAG)
-
-test_ui:
-	$(DB) crawler_ui:test -f docker/ui/Dockerfile_test docker/ui
-
-test_crawler:
-	$(DB) crawler:test -f docker/crawler/Dockerfile_test docker/crawler
 
 push:
 	$(DP) $(USER_NAME)/crawler_ui:$(TAG)
 	$(DP) $(USER_NAME)/crawler:$(TAG)
 
-.PHONY: crawler ui test_ui  test_crawler push
+.PHONY: crawler ui push
